@@ -17,20 +17,13 @@ function TransactionItem(props) {
             : require("../../assets/bg-red.png")
         }
         style={{ flex: 1 }}
-        imageStyle={{ borderRadius: 5 }}
+        imageStyle={{ borderRadius: 5, width: "100%", height: "100%" }}
       >
         <View style={styles.listItemHeader}>
           <Text style={styles.text1}>{props.t.title} - </Text>
           <Text style={styles.text2}>{props.t.date}</Text>
         </View>
-        <Text
-          style={[
-            styles.amount,
-            { color: props.t.value >= 0 ? "green" : "red" }
-          ]}
-        >
-          {props.t.value.toFixed(2)} $
-        </Text>
+        <Text style={[styles.amount]}>{props.t.value.toFixed(2)} $</Text>
       </ImageBackground>
     </TouchableOpacity>
   );
@@ -38,15 +31,19 @@ function TransactionItem(props) {
 
 const styles = StyleSheet.create({
   listItem: {
-    paddingHorizontal: 0,
+    paddingHorizontal: 3,
+    paddingVertical: 1,
     borderRadius: 50
   },
 
   amount: {
     textAlign: "right",
-    fontSize: 25,
-    paddingHorizontal: 10,
-    paddingBottom: 5
+    textAlignVertical: "center",
+    fontSize: 30,
+    paddingRight: 25,
+    paddingBottom: 5,
+    color: "white",
+    fontWeight: "100"
   },
 
   listItemHeader: {
@@ -57,11 +54,12 @@ const styles = StyleSheet.create({
   },
 
   text1: {
-    fontSize: 17
+    fontSize: 17,
+    color: "white"
   },
   text2: {
     fontSize: 15,
-    color: "#212121"
+    color: "#fff"
   }
 });
 
