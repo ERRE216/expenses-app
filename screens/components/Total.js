@@ -5,7 +5,7 @@ import { GlobalContext } from "../../context/globalContext";
 
 function Total() {
   const [positive, setPositive] = useState(false);
-  const [state, dispatch] = useContext(GlobalContext);
+  const { state, dispatch } = useContext(GlobalContext);
   const [total, setTotal] = useState(0);
 
   useEffect(() => {

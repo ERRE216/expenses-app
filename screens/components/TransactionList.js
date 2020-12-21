@@ -6,7 +6,11 @@ import { GlobalContext } from "../../context/globalContext";
 import TransactionItem from "./TransactionItem";
 
 function TransactionList() {
-  const [state, dispatch] = useContext(GlobalContext);
+  const { state, dispatch, getTransactions } = useContext(GlobalContext);
+
+  useEffect(() => {
+    getTransactions();
+  }, []);
 
   return (
     <View style={styles.listContent}>

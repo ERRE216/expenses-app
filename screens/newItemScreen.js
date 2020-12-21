@@ -6,7 +6,7 @@ import { GlobalContext } from "../context/globalContext";
 import FocusableTextInput from "./components/FocusableTextInput";
 
 function newItemScreen(props) {
-  const [state, dispatch] = useContext(GlobalContext);
+  const { state, dispatch, addTransaction } = useContext(GlobalContext);
   const [title, setTitle] = useState("");
   const [amount, setAmount] = useState("");
   const [description, setDescription] = useState("");
@@ -80,7 +80,7 @@ function newItemScreen(props) {
               "Invalid Inputs",
               " You must fill all the inputs to create a new Track"
             );
-          dispatch({ type: "addTransaction", payload: transaction });
+          addTransaction(transaction);
           setTitle("");
           setAmount("");
           setDescription("");
