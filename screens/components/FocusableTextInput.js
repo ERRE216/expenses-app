@@ -1,8 +1,8 @@
 import React from "react";
 import { View, TextInput, StyleSheet, Text } from "react-native";
 
-const FocusableTextInput = props => {
-  const onChanges = text => {
+const FocusableTextInput = (props) => {
+  const onChanges = (text) => {
     const data = { name: props.name, text };
     props.handleChange(data);
   };
@@ -23,10 +23,11 @@ const FocusableTextInput = props => {
 
 const styles = StyleSheet.create({
   input: {
-    padding: 10,
+    padding: 6,
     fontSize: 15,
+    fontFamily: "Roboto-Regular",
     textAlign: "left",
-    textAlignVertical: "top"
+    textAlignVertical: "center",
   },
   inputBackground: {
     margin: 3,
@@ -35,14 +36,15 @@ const styles = StyleSheet.create({
     borderColor: "#e2e2e2",
     borderWidth: 2,
     borderRadius: 5,
-    alignItems: "stretch"
+    alignItems: "stretch",
   },
   row: {
     width: "100%",
-    flexDirection: "row"
+    flexDirection: "row",
   },
   fullSize: {
-    flex: 1
-  }
+    flex: 1,
+    textAlignVertical: "top",
+  },
 });
 export default FocusableTextInput;

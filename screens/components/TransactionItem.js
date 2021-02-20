@@ -6,16 +6,28 @@ import {
   StyleSheet,
   TouchableOpacity,
   ImageBackground,
-  Button
+  Button,
 } from "react-native";
 
 import { GlobalContext } from "../../context/globalContext";
+
+const dateFormat = (date) => {
+  const fullDate = new Date(date);
+
+  const day = fullDate.getDate();
+  const month = fullDate.toUTCString("GMT").split(" ")[2];
+
+  const dateString = `${month} ${day.toString().padStart(2, "0")} `;
+
+  return dateString;
+};
 
 function TransactionItem(props) {
   const [expanded, setExpanded] = useState(false);
   const [infoExpanded, setInfoExpanded] = useState(false);
 
   const { state, dispatch, deleteTransaction } = useContext(GlobalContext);
+
   return (
     <TouchableOpacity
       activeOpacity={0.9}
@@ -36,7 +48,7 @@ function TransactionItem(props) {
         <View style={{ flex: 1 }}>
           <View style={styles.listItemHeader}>
             <Text style={styles.text1}>{props.t.title} - </Text>
-            <Text style={styles.text2}>{props.t.date}</Text>
+            <Text style={styles.text2}>{dateFormat(props.t.date)}</Text>
           </View>
           <Text style={[styles.amount]}>{props.t.value.toFixed(2)} $</Text>
         </View>
@@ -46,10 +58,9 @@ function TransactionItem(props) {
             <TouchableOpacity
               style={{
                 backgroundColor: props.t.value >= 0 ? "#0E8E4E" : "#911E24",
-                padding: 5
+                padding: 5,
               }}
               onPress={() => {
-                console.log("Sent to Delete", props.t.id);
                 deleteTransaction(props.t.id);
               }}
             >
@@ -64,7 +75,7 @@ function TransactionItem(props) {
             <TouchableOpacity
               style={{
                 backgroundColor: props.t.value >= 0 ? "#0E8E4E" : "#911E24",
-                padding: 5
+                padding: 5,
               }}
               onPress={() => {
                 setInfoExpanded(!infoExpanded);
@@ -97,7 +108,7 @@ const styles = StyleSheet.create({
   listItem: {
     paddingHorizontal: 3,
     paddingVertical: 1,
-    borderRadius: 50
+    borderRadius: 50,
   },
 
   amount: {
@@ -107,47 +118,51 @@ const styles = StyleSheet.create({
     paddingRight: 25,
     paddingBottom: 5,
     color: "white",
-    fontWeight: "100"
+    fontFamily: "Roboto-Light",
   },
 
   listItemHeader: {
     flexDirection: "row",
     alignItems: "center",
     padding: 5,
-    paddingHorizontal: 10
+    paddingHorizontal: 10,
   },
 
   text1: {
-    fontSize: 17,
-    color: "white"
+    fontSize: 18,
+    color: "white",
+    fontFamily: "Roboto-Regular",
   },
   text2: {
-    fontSize: 15,
-    color: "#fff"
+    fontSize: 16,
+    color: "#fff",
+    fontFamily: "Roboto-Light",
   },
   text3: {
     color: "black",
     paddingHorizontal: 50,
-    fontSize: 17
+    fontSize: 17,
+    fontFamily: "Roboto-Medium",
   },
   options: {
     alignItems: "center",
     justifyContent: "space-between",
     flexDirection: "column",
-    padding: 10
+    padding: 10,
   },
   infoView: {
     backgroundColor: "#eee",
     borderRadius: 5,
     padding: 10,
     flexDirection: "row",
-    alignItems: "center"
+    alignItems: "center",
   },
   infoDescription: {
     flex: 1,
     paddingHorizontal: 10,
-    color: "black"
-  }
+    color: "black",
+    fontFamily: "Roboto-Medium",
+  },
 });
 
 export default TransactionItem;

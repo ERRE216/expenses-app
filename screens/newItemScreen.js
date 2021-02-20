@@ -1,17 +1,60 @@
-import React, { useState, useContext } from "react";
-import { View, StyleSheet, Button, TextInput, Text, Alert } from "react-native";
+import React, { useState, useContext, useEffect } from "react";
+import {
+  View,
+  StyleSheet,
+  Button,
+  Text,
+  Alert,
+  TouchableOpacity,
+} from "react-native";
+import DropDownPicker from "react-native-dropdown-picker";
+import DateTimePicker from "@react-native-community/datetimepicker";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 import { GlobalContext } from "../context/globalContext";
 
 import FocusableTextInput from "./components/FocusableTextInput";
+import CheckBox from "./components/CheckBox";
+import CategoryList from "./components/options/CategoryList";
 
 function newItemScreen(props) {
   const { state, dispatch, addTransaction } = useContext(GlobalContext);
   const [title, setTitle] = useState("");
   const [amount, setAmount] = useState("");
   const [description, setDescription] = useState("");
+  const [type, setType] = useState("expense");
+  const [category, setCategory] = useState(null);
 
-  const handleChange = event => {
+  const [date, setDate] = useState(new Date(Date.now()));
+  const [mode, setMode] = useState("date");
+  const [show, setShow] = useState(false);
+
+  const onCheck = (name) => {
+    setType(name);
+  };
+
+  const onChange = (event, selectedDate) => {
+    const currentDate = selectedDate || date;
+    setDate(currentDate);
+  };
+  const showDatepicker = (currentMode) => {
+    setShow(true);
+    setMode(currentMode);
+  };
+
+  useEffect(() => {
+    setShow(false);
+  });
+
+  const formateDate = (date) => {
+    const dateComponents = new Date(date);
+    const dateString = `${dateComponents.getDate()} ${
+      dateComponents.toLocaleString("en-US").split(" ")[1]
+    } ${dateComponents.getUTCFullYear()}`;
+    return dateString;
+  };
+
+  const handleChange = (event) => {
     switch (event.name) {
       case "title":
         setTitle(event.text);
@@ -28,8 +71,25 @@ function newItemScreen(props) {
     }
   };
 
+  function CategoryListArray(list) {
+    let ListArray = [];
+    list.map((i) => {
+      if (i.type.toLowerCase() === type.toLowerCase()) {
+        ListArray.push({
+          label: i.title,
+          value: i.id,
+          icon: () => (
+            <MaterialCommunityIcons name={i.icon} size={18} color={"grey"} />
+          ),
+        });
+      }
+    });
+    return ListArray;
+  }
+
   return (
     <View style={[styles.container, styles.mg10]}>
+      <Text style={styles.text}>New Item</Text>
       <View style={styles.row}>
         <FocusableTextInput
           name='title'
@@ -43,13 +103,74 @@ function newItemScreen(props) {
         <FocusableTextInput
           name='amount'
           placeholder='Amount'
-          type='numeric'
+          type='decimal-pad'
           flex={1}
           multiline={false}
           handleChange={handleChange}
           value={amount}
         />
       </View>
+      <View style={[styles.row, styles.pdh]}>
+        <Text style={styles.text}>Type: </Text>
+        <CheckBox
+          title={"Expense"}
+          name={"expense"}
+          onCheck={onCheck}
+          type={type}
+        />
+        <CheckBox
+          title={"Income"}
+          name={"income"}
+          onCheck={onCheck}
+          type={type}
+        />
+      </View>
+      <View style={[styles.row, styles.pdh]}>
+        <Text style={styles.text}>Date: </Text>
+        <TouchableOpacity style={styles.dateButton} onPress={showDatepicker}>
+          <Text style={styles.text2}>{formateDate(date)}</Text>
+          <MaterialCommunityIcons
+            name='chevron-down'
+            size={25}
+            color={"black"}
+          />
+        </TouchableOpacity>
+        {show && (
+          <DateTimePicker
+            testID='dateTimePicker'
+            value={date}
+            mode={mode}
+            is24Hour={false}
+            display='default'
+            onChange={onChange}
+          />
+        )}
+      </View>
+      <View style={[styles.row, styles.pdh]}>
+        <Text style={styles.text}>Category: </Text>
+        <View style={{ width: "50%" }}>
+          <DropDownPicker
+            placeholder='Select a Category'
+            items={CategoryListArray(state.categories)}
+            defaultValue={category}
+            containerStyle={{ height: 40 }}
+            style={{
+              fontSize: 15,
+              fontFamily: "Roboto-Regular",
+              textAlign: "left",
+              textAlignVertical: "center",
+            }}
+            itemStyle={{
+              justifyContent: "flex-start",
+            }}
+            dropDownStyle={{ backgroundColor: "#fafafa" }}
+            onChangeItem={(item) => {
+              setCategory(item.value);
+            }}
+          />
+        </View>
+      </View>
+
       <FocusableTextInput
         name='description'
         placeholder='Insert Description...'
@@ -63,29 +184,31 @@ function newItemScreen(props) {
       <Button
         title='Add New'
         color='#e91e63'
-        accessibilityLabel='Learn more about this purple button'
+        accessibilityLabel='Add new transaction'
         onPress={() => {
-          const d = new Date(Date.now());
-          const dNow = d;
+          const d = new Date(date);
           const transaction = {
-            id: Math.random().toString(),
+            id: `${Math.random()}.${Date.now()}`,
             title,
-            value: parseFloat(amount),
-            description,
-            date: dNow.toLocaleDateString("en-US")
+            value: parseFloat(type === "expense" ? -amount : amount),
+            description:
+              description == "" ? "No given description" : description,
+            date: d,
+            category: category,
           };
 
-          if (title == "" || amount == "" || description == "")
+          if (title == "" || amount == "" || category == "")
             return Alert.alert(
               "Invalid Inputs",
-              " You must fill all the inputs to create a new Track"
+              "You must fill all the inputs to create a new category"
             );
           addTransaction(transaction);
+          props.navigation.navigate("Home");
           setTitle("");
           setAmount("");
+          setCategory(null);
           setDescription("");
-
-          props.navigation.navigate("Home");
+          setDate(new Date(Date.now()));
         }}
       />
     </View>
@@ -95,18 +218,34 @@ function newItemScreen(props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 100,
-    backgroundColor: "#eeeeee"
   },
   row: {
     width: "100%",
-    flexDirection: "row"
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  pdh: {
+    paddingHorizontal: 25,
   },
   flex2: {
-    flex: 2
+    flex: 2,
+  },
+  text: {
+    color: "#020B11",
+    fontSize: 15,
+    textAlign: "center",
+    fontSize: 20,
+    paddingVertical: 10,
+    fontFamily: "Roboto-Light",
+  },
+  dateButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
   },
   mg10: {
-    margin: 10
-  }
+    margin: 10,
+  },
 });
 export default newItemScreen;

@@ -16,35 +16,30 @@ function Total() {
   });
 
   return (
-    <View style={styles.content}>
-      {/* <Text style={styles.text}>Total</Text> */}
+    <View
+      style={[
+        styles.content,
+        { backgroundColor: total >= 0 ? "#10A25B" : "#BB262C" }
+      ]}
+    >
       <Text style={[styles.totalAmount]}>{total} $</Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  //   total: {
-  //     backgroundColor: "#0F4C75",
-  //     marginHorizontal: 15,
-  //     marginTop: 20,
-  //     padding: 25,
-  //     borderRadius: 0
-  //   },
   text: {
     color: "#020B11",
-    fontSize: 20,
-    fontWeight: "700"
+    fontSize: 20
   },
   content: {
-    padding: 10,
-    marginHorizontal: 30,
-    marginBottom: 5
+    paddingTop: 50
   },
   totalAmount: {
+    fontFamily: "Roboto-Light",
     fontSize: 40,
     textAlign: "center",
-    paddingVertical: 25,
+    paddingVertical: 20,
     color: "white",
     fontWeight: "100"
   }
